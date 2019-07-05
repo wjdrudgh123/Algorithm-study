@@ -1,60 +1,51 @@
 #include <iostream>
 #include <string>
 #include <queue>
-#include <vector>
 #include <utility>
 
 using namespace std;
 
+/* 
+result 변수로 했을 때는 큐에 값 들어간 수대로 계속 증가가 됨
+그래서 2차원 배열을 따로 설정해 전 좌표를 설정하고 증가 값을 넣음.
+분기가 되도 전 배열(좌표)의 값에 더하기 때문에 result처럼 전체 큐 값으로 증가가 안됨을 알 수 있었음. 
+*/
 int solution(string a[], int n, int m, int N, int M){
     queue<pair<int,int>> q;
     q.push(make_pair(n, m));
     a[n][m] = '0';
-    int result = 0;
-    int goX = 0;
-    int goY = 0;
+    int result[N][M] = {0};
+    result[n][m] = 1;
     while(!q.empty()){
-        int x = q.front().first;
-        int y = q.front().second;
-        int lastY = q.back().second;
-        int temp = 0;
-        q.pop();
-        cout << x << "," << y << "," << q.size() << endl;
-        // if(y < lastY){
-        //     continue;
-        // }
-        result++;
-        if(x + 1 >= 0 && a[x+1][y] == '1'){
-            q.push(make_pair(x+1, y));
-            a[x+1][y] = '0';
-            temp++;
-            goX++;
-        }
-        if(y + 1 >= 0 && a[x][y + 1] == '1'){
-            q.push(make_pair(x, y + 1));
-            a[x][y+1] = '0';
-            temp++;
-            goY++;
-        }
-        if(y - 1 >= 0 && a[x][y-1] == '1'){
-            q.push(make_pair(x, y-1));
-            a[x][y-1] = '0';
-            temp++;
-        }
-        if(x - 1 >= 0 && a[x-1][y] == '1'){
-            q.push(make_pair(x-1, y));
-            a[x-1][y] = '0';
-            temp++;
-        }
-        if(x == N -1 && y == M - 1){
-            break;
-        }
-        if(temp == 0){
-            cout << "back" <<x <<","<< y<< endl;
-            result--;
-        }
+        // cout << "큐 사이즈 : " << q.size() << endl;
+            int x = q.front().first;
+            int y = q.front().second;
+            q.pop();
+            // cout << "x: " << x << ", y: " << y << endl;
+            if(x + 1 < N && a[x+1][y] == '1'){
+                result[x+1][y] = result[x][y]+1;
+                a[x+1][y] = '0';
+                q.push(make_pair(x+1, y));
+            }
+            if(y + 1 < M && a[x][y + 1] == '1'){
+                result[x][y+1] = result[x][y]+1;
+                a[x][y+1] = '0';
+                q.push(make_pair(x, y + 1));
+            }
+            if(y - 1 >= 0 && a[x][y-1] == '1'){
+                result[x][y-1] = result[x][y]+1;
+                a[x][y-1] = '0';
+                q.push(make_pair(x, y-1));
+            }
+            if(x - 1 >= 0 && a[x-1][y] == '1'){
+                result[x-1][y] = result[x][y]+1;
+                a[x-1][y] = '0';
+                q.push(make_pair(x-1, y));
+            }
+            if(x == N -1 && y == M - 1){
+                return result[x][y];
+            }
     }
-    cout << "out" <<result << ","<< goX << "," <<goY << endl;
     return 0;
 }
 
@@ -69,5 +60,6 @@ int main(){
     }
     //미로 완성
     int result = solution(maze, 0, 0, n, m);
+    cout << result;
     return 0;
 }
